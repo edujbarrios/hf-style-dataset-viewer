@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { Database, RefreshCcw, Settings2, Sigma } from 'lucide-react'
 
 import { useDatasetStore } from '@/store/datasets'
@@ -11,6 +12,13 @@ import { Sidebar } from './sidebar'
 
 export function AppShell() {
   const selected = useDatasetStore((s) => s.selected)
+  const refresh = useDatasetStore((s) => s.refresh)
+  const isLoading = useDatasetStore((s) => s.isLoading)
+  const error = useDatasetStore((s) => s.error)
+
+  useEffect(() => {
+    void refresh()
+  }, [refresh])
 
   return (
     <div className="h-dvh w-full bg-slate-50">
@@ -32,7 +40,13 @@ export function AppShell() {
           ) : null}
         </div>
         <div className="flex items-center gap-2">
-          <Button size="icon" variant="ghost" aria-label="Refresh">
+          <Button
+            size="icon"
+            variant="ghost"
+            aria-label="Refresh"
+            onClick={() => void refresh()}
+            disabled={isLoading}
+          >
             <RefreshCcw className="h-4 w-4" />
           </Button>
           <Button size="icon" variant="ghost" aria-label="Statistics">
@@ -47,6 +61,14 @@ export function AppShell() {
       <div className="grid h-[calc(100dvh-3.5rem)] grid-cols-[280px_1fr]">
         <Sidebar />
         <main className="overflow-auto p-6">
+          {error ? (
+            <Card className="border-red-200 bg-red-50">
+              <CardHeader>
+                <CardTitle className="text-red-900">Failed to load</CardTitle>
+              </CardHeader>
+              <CardContent className="text-sm text-red-800">{error}</CardContent>
+            </Card>
+          ) : null}
           {selected ? (
             <div className="space-y-4">
               <div className="grid grid-cols-3 gap-4">
@@ -100,4 +122,3 @@ export function AppShell() {
     </div>
   )
 }
-
