@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '../ui/card'
 import { Separator } from '../ui/separator'
 
 import { Sidebar } from './sidebar'
+import { TableViewer } from '../viewer/table-viewer'
 
 export function AppShell() {
   const selected = useDatasetStore((s) => s.selected)
@@ -92,20 +93,11 @@ export function AppShell() {
                   <CardHeader>
                     <CardTitle>Columns</CardTitle>
                   </CardHeader>
-                  <CardContent className="text-2xl font-semibold text-slate-400">
-                    —
-                  </CardContent>
+                  <CardContent className="text-2xl font-semibold text-slate-400">—</CardContent>
                 </Card>
               </div>
 
-              <Card>
-                <CardHeader>
-                  <CardTitle>Table</CardTitle>
-                </CardHeader>
-                <CardContent className="text-sm text-slate-500">
-                  Table viewer coming next: sorting, pagination, search, and virtualization.
-                </CardContent>
-              </Card>
+              <TableViewer datasetName={selected.name} />
             </div>
           ) : (
             <Card>
