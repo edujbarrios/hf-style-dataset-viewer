@@ -1,7 +1,8 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { Database, RefreshCcw, Settings2, Sigma } from 'lucide-react'
 
 import { useDatasetStore } from '@/store/datasets'
+import { getDatasetStats } from '@/services/datasets'
 
 import { Badge } from '../ui/badge'
 import { Button } from '../ui/button'
@@ -17,9 +18,35 @@ export function AppShell() {
   const isLoading = useDatasetStore((s) => s.isLoading)
   const error = useDatasetStore((s) => s.error)
 
+  const [columns, setColumns] = useState<number | null>(null)
+  const selectedName = selected?.name ?? null
+
   useEffect(() => {
     void refresh()
   }, [refresh])
+
+  useEffect(() => {
+    let cancelled = false
+    queueMicrotask(() => {
+      if (cancelled) return
+      setColumns(null)
+    })
+    if (!selectedName) return () => void (cancelled = true)
+
+    getDatasetStats(selectedName)
+      .then((s) => {
+        if (cancelled) return
+        setColumns(s.columns)
+      })
+      .catch(() => {
+        if (cancelled) return
+        setColumns(null)
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [selectedName])
 
   return (
     <div className="h-dvh w-full bg-slate-50">
@@ -36,6 +63,9 @@ export function AppShell() {
                 <div className="text-sm font-medium text-slate-900">{selected.name}</div>
                 <Badge>{selected.format}</Badge>
                 <div className="text-xs text-slate-500">{selected.rows.toLocaleString()} rows</div>
+                {columns !== null ? (
+                  <div className="text-xs text-slate-500">{columns.toLocaleString()} cols</div>
+                ) : null}
               </div>
             </>
           ) : null}
@@ -93,7 +123,9 @@ export function AppShell() {
                   <CardHeader>
                     <CardTitle>Columns</CardTitle>
                   </CardHeader>
-                  <CardContent className="text-2xl font-semibold text-slate-400">—</CardContent>
+                  <CardContent className="text-2xl font-semibold">
+                    {columns !== null ? columns.toLocaleString() : '—'}
+                  </CardContent>
                 </Card>
               </div>
 
