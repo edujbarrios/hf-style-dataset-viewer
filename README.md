@@ -32,9 +32,11 @@ Frontend (`http://localhost:5173`) talks only to the local backend (`http://loca
 
 ## Screenshots
 
-- `TODO`: header + sidebar
-- `TODO`: table preview
-- `TODO`: statistics modal
+<img src="docs/screenshots/header-sidebar.png" alt="Header and sidebar" width="900" />
+
+<img src="docs/screenshots/table-preview.png" alt="Table preview" width="900" />
+
+<img src="docs/screenshots/statistics-modal.png" alt="Statistics modal" width="900" />
 
 ## Getting Started
 
