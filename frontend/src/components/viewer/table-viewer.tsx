@@ -75,7 +75,7 @@ function PreviewCell({ datasetName, value }: { datasetName: string; value: unkno
         href={assetUrl}
         target="_blank"
         rel="noreferrer"
-        className="block space-y-1"
+        className="flex min-w-0 items-center gap-2"
         title={value}
       >
         <img
@@ -83,9 +83,9 @@ function PreviewCell({ datasetName, value }: { datasetName: string; value: unkno
           alt={value}
           loading="lazy"
           decoding="async"
-          className="max-h-36 w-auto max-w-full rounded border border-slate-200 bg-white"
+          className="h-10 w-10 shrink-0 rounded border border-slate-200 bg-white object-cover"
         />
-        <div className="text-[11px] text-slate-500">{value}</div>
+        <div className="min-w-0 truncate text-xs text-slate-500">{value}</div>
       </a>
     )
   }
@@ -167,7 +167,7 @@ export function TableViewer({ datasetName }: { datasetName: string }) {
   const rowVirtualizer = useVirtualizer({
     count: rows.length,
     getScrollElement: () => parentRef.current,
-    estimateSize: () => 72,
+    estimateSize: () => 56,
     overscan: 10,
   })
 
@@ -283,8 +283,6 @@ export function TableViewer({ datasetName }: { datasetName: string }) {
               return (
                 <div
                   key={row.id}
-                  ref={rowVirtualizer.measureElement}
-                  data-index={virtualRow.index}
                   className="grid border-b border-slate-100 hover:bg-slate-50"
                   style={{
                     gridTemplateColumns,

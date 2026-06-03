@@ -16,6 +16,7 @@ A local-first dataset explorer inspired by the Hugging Face Dataset Viewer.
 - Fast backend preview with DuckDB
 - Table viewer with sticky header + horizontal scroll
 - Server-side pagination, sorting, and global search
+- Image thumbnails for `*.png/*.jpg/*.webp` path columns (e.g. `image_path`)
 - Row virtualization for smooth scrolling
 - Dataset statistics endpoint (missing/unique/numeric summaries)
 
@@ -54,6 +55,8 @@ Drop files into `./datasets`:
 - `*.parquet`
 
 Sample datasets are included in `datasets/`.
+
+Image-text datasets are supported by adding a column with image paths (for example `image_path`) that point to image files under `./datasets` (including subfolders). The UI will render thumbnails in the table preview.
 
 ### 2) Start the backend
 
