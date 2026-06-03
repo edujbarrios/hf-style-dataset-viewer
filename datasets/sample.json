@@ -1,0 +1,26 @@
+[
+  {
+    "id": 1,
+    "source": "synthetic_math",
+    "problem": "Solve x + 5 = 10",
+    "solution": "x = 5",
+    "messages": [
+      {
+        "role": "user",
+        "content": "Solve x + 5 = 10"
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "source": "synthetic_math",
+    "problem": "Solve 2y - 4 = 8",
+    "solution": "y = 6",
+    "messages": [
+      {
+        "role": "user",
+        "content": "Solve 2y - 4 = 8"
+      }
+    ]
+  }
+]
