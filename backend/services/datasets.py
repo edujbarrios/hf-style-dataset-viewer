@@ -43,6 +43,9 @@ class DatasetService:
         columns = len(self._schema_columns(dataset))
         return DatasetStatsResponse(rows=rows, columns=columns)
 
+    def get_dataset(self, name: str) -> DatasetRef:
+        return self._get_by_name(name)
+
     def preview(
         self,
         *,

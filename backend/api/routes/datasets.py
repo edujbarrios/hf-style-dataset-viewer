@@ -2,8 +2,15 @@ from __future__ import annotations
 
 from fastapi import APIRouter, HTTPException, Query
 
-from backend.schemas.dataset import DatasetPreviewResponse, DatasetSchemaResponse, DatasetStatsResponse, DatasetSummary
+from backend.schemas.dataset import (
+    DatasetPreviewResponse,
+    DatasetSchemaResponse,
+    DatasetStatisticsResponse,
+    DatasetStatsResponse,
+    DatasetSummary,
+)
 from backend.services.datasets import DatasetService
+from backend.services.statistics import DatasetStatisticsService
 
 router = APIRouter(prefix="/datasets", tags=["datasets"])
 
@@ -25,6 +32,15 @@ def dataset_schema(name: str) -> DatasetSchemaResponse:
 def dataset_stats(name: str) -> DatasetStatsResponse:
     try:
         return DatasetService().get_stats(name)
+    except FileNotFoundError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+
+@router.get("/{name}/statistics", response_model=DatasetStatisticsResponse)
+def dataset_statistics(name: str) -> DatasetStatisticsResponse:
+    try:
+        dataset = DatasetService().get_dataset(name)
+        return DatasetStatisticsService().compute(dataset)
     except FileNotFoundError as exc:
         raise HTTPException(status_code=404, detail=str(exc)) from exc
 
