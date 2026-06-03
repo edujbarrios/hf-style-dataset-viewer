@@ -8,6 +8,7 @@ import {
 import { useVirtualizer } from '@tanstack/react-virtual'
 
 import { previewDataset } from '@/services/datasets'
+import { API_BASE_URL } from '@/services/api'
 import type { DatasetColumn, DatasetPreviewResponse } from '@/types/datasets'
 import { useDebouncedValue } from '@/hooks/use-debounced-value'
 
@@ -15,6 +16,18 @@ import { Badge } from '../ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card'
 import { Button } from '../ui/button'
 import { Input } from '../ui/input'
+
+function isLikelyImagePath(value: string): boolean {
+  const v = value.trim().toLowerCase()
+  if (v.length === 0) return false
+  return (
+    v.endsWith('.png') ||
+    v.endsWith('.jpg') ||
+    v.endsWith('.jpeg') ||
+    v.endsWith('.gif') ||
+    v.endsWith('.webp')
+  )
+}
 
 function stringifyCell(value: unknown): string {
   if (value === null) return 'null'
@@ -52,6 +65,32 @@ function ExpandableCell({ value }: { value: unknown }) {
       </Button>
     </div>
   )
+}
+
+function PreviewCell({ datasetName, value }: { datasetName: string; value: unknown }) {
+  if (typeof value === 'string' && isLikelyImagePath(value)) {
+    const assetUrl = `${API_BASE_URL}/datasets/${encodeURIComponent(datasetName)}/asset?path=${encodeURIComponent(value)}`
+    return (
+      <a
+        href={assetUrl}
+        target="_blank"
+        rel="noreferrer"
+        className="block space-y-1"
+        title={value}
+      >
+        <img
+          src={assetUrl}
+          alt={value}
+          loading="lazy"
+          decoding="async"
+          className="max-h-36 w-auto max-w-full rounded border border-slate-200 bg-white"
+        />
+        <div className="text-[11px] text-slate-500">{value}</div>
+      </a>
+    )
+  }
+
+  return <ExpandableCell value={value} />
 }
 
 export function TableViewer({ datasetName }: { datasetName: string }) {
@@ -107,9 +146,9 @@ export function TableViewer({ datasetName }: { datasetName: string }) {
     return cols.map((c) => ({
       accessorKey: c.name,
       header: () => <ColumnHeader name={c.name} dtype={c.dtype} />,
-      cell: ({ getValue }) => <ExpandableCell value={getValue()} />,
+      cell: ({ getValue }) => <PreviewCell datasetName={datasetName} value={getValue()} />,
     }))
-  }, [data?.columns])
+  }, [data?.columns, datasetName])
 
   // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
@@ -128,7 +167,7 @@ export function TableViewer({ datasetName }: { datasetName: string }) {
   const rowVirtualizer = useVirtualizer({
     count: rows.length,
     getScrollElement: () => parentRef.current,
-    estimateSize: () => 56,
+    estimateSize: () => 72,
     overscan: 10,
   })
 
@@ -244,6 +283,8 @@ export function TableViewer({ datasetName }: { datasetName: string }) {
               return (
                 <div
                   key={row.id}
+                  ref={rowVirtualizer.measureElement}
+                  data-index={virtualRow.index}
                   className="grid border-b border-slate-100 hover:bg-slate-50"
                   style={{
                     gridTemplateColumns,
