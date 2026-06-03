@@ -10,6 +10,8 @@ export function Sidebar() {
   const datasets = useDatasetStore((s) => s.datasets)
   const selected = useDatasetStore((s) => s.selected)
   const selectByName = useDatasetStore((s) => s.selectByName)
+  const isLoading = useDatasetStore((s) => s.isLoading)
+  const error = useDatasetStore((s) => s.error)
 
   return (
     <aside className="flex h-full flex-col border-r border-slate-200 bg-white">
@@ -18,8 +20,10 @@ export function Sidebar() {
           datasets
         </div>
         <div className="mt-3">
-          <Input placeholder="Search datasets…" />
+          <Input placeholder="Search datasets…" disabled={isLoading} />
         </div>
+        {isLoading ? <div className="mt-2 text-xs text-slate-500">Loading…</div> : null}
+        {error ? <div className="mt-2 text-xs text-red-700">{error}</div> : null}
       </div>
       <Separator />
       <div className="flex-1 overflow-auto p-2">
@@ -49,9 +53,11 @@ export function Sidebar() {
               </button>
             )
           })}
+          {!isLoading && datasets.length === 0 ? (
+            <div className="px-3 py-6 text-sm text-slate-500">No datasets found in `./datasets`.</div>
+          ) : null}
         </div>
       </div>
     </aside>
   )
 }
-

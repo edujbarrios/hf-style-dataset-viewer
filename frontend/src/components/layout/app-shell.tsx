@@ -1,8 +1,10 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 import { useEffect, useState } from 'react'
 import { Database, RefreshCcw, Settings2, Sigma } from 'lucide-react'
 
 import { useDatasetStore } from '@/store/datasets'
-import { getDatasetStats } from '@/services/datasets'
+import { getDatasetStats, getDatasetStatistics } from '@/services/datasets'
+import type { DatasetStatisticsResponse } from '@/types/datasets'
 
 import { Badge } from '../ui/badge'
 import { Button } from '../ui/button'
@@ -20,6 +22,10 @@ export function AppShell() {
 
   const [columns, setColumns] = useState<number | null>(null)
   const selectedName = selected?.name ?? null
+  const [showStats, setShowStats] = useState(false)
+  const [stats, setStats] = useState<DatasetStatisticsResponse | null>(null)
+  const [statsError, setStatsError] = useState<string | null>(null)
+  const [isStatsLoading, setIsStatsLoading] = useState(false)
 
   useEffect(() => {
     void refresh()
@@ -47,6 +53,35 @@ export function AppShell() {
       cancelled = true
     }
   }, [selectedName])
+
+  useEffect(() => {
+    let cancelled = false
+    queueMicrotask(() => {
+      if (cancelled) return
+      setStats(null)
+      setStatsError(null)
+    })
+    if (!showStats || !selectedName) return () => void (cancelled = true)
+
+    setIsStatsLoading(true)
+    getDatasetStatistics(selectedName)
+      .then((s) => {
+        if (cancelled) return
+        setStats(s)
+      })
+      .catch((e: unknown) => {
+        if (cancelled) return
+        setStatsError(e instanceof Error ? e.message : 'Failed to load statistics')
+      })
+      .finally(() => {
+        if (cancelled) return
+        setIsStatsLoading(false)
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [showStats, selectedName])
 
   return (
     <div className="h-dvh w-full bg-slate-50">
@@ -80,7 +115,13 @@ export function AppShell() {
           >
             <RefreshCcw className="h-4 w-4" />
           </Button>
-          <Button size="icon" variant="ghost" aria-label="Statistics">
+          <Button
+            size="icon"
+            variant="ghost"
+            aria-label="Statistics"
+            onClick={() => setShowStats(true)}
+            disabled={!selectedName}
+          >
             <Sigma className="h-4 w-4" />
           </Button>
           <Button size="icon" variant="ghost" aria-label="Settings">
@@ -143,6 +184,31 @@ export function AppShell() {
           )}
         </main>
       </div>
+
+      {showStats ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-4">
+          <div className="w-full max-w-3xl rounded-lg border border-slate-200 bg-white shadow">
+            <div className="flex items-center justify-between border-b border-slate-200 p-4">
+              <div>
+                <div className="text-sm font-semibold text-slate-900">Statistics</div>
+                <div className="text-xs text-slate-500">{selectedName ?? '—'}</div>
+              </div>
+              <Button variant="secondary" size="sm" onClick={() => setShowStats(false)}>
+                Close
+              </Button>
+            </div>
+            <div className="max-h-[70vh] overflow-auto p-4 text-sm">
+              {isStatsLoading ? <div className="text-slate-500">Loading…</div> : null}
+              {statsError ? <div className="text-red-700">{statsError}</div> : null}
+              {stats ? (
+                <pre className="whitespace-pre-wrap break-words rounded-md bg-slate-50 p-3 text-xs text-slate-800">
+                  {JSON.stringify(stats, null, 2)}
+                </pre>
+              ) : null}
+            </div>
+          </div>
+        </div>
+      ) : null}
     </div>
   )
 }

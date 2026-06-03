@@ -1,6 +1,7 @@
 import type {
   DatasetPreviewResponse,
   DatasetSchemaResponse,
+  DatasetStatisticsResponse,
   DatasetStatsResponse,
   DatasetSummary,
 } from '@/types/datasets'
@@ -17,6 +18,10 @@ export function getDatasetSchema(name: string): Promise<DatasetSchemaResponse> {
 
 export function getDatasetStats(name: string): Promise<DatasetStatsResponse> {
   return apiGet<DatasetStatsResponse>(`/datasets/${encodeURIComponent(name)}/stats`)
+}
+
+export function getDatasetStatistics(name: string): Promise<DatasetStatisticsResponse> {
+  return apiGet<DatasetStatisticsResponse>(`/datasets/${encodeURIComponent(name)}/statistics`)
 }
 
 export function previewDataset(
@@ -39,4 +44,3 @@ export function previewDataset(
     `/datasets/${encodeURIComponent(name)}/preview?${qp.toString()}`,
   )
 }
-

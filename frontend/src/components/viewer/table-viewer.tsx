@@ -270,6 +270,11 @@ export function TableViewer({ datasetName }: { datasetName: string }) {
                 No rows to display.
               </div>
             ) : null}
+            {isLoading ? (
+              <div className="absolute inset-0 flex items-center justify-center bg-white/70 text-sm text-slate-500">
+                Loading preview…
+              </div>
+            ) : null}
           </div>
         </div>
       </CardContent>

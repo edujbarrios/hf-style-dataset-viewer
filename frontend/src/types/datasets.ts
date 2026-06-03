@@ -27,3 +27,18 @@ export type DatasetPreviewResponse = {
   columns: DatasetColumn[]
   rows: Record<string, unknown>[]
 }
+
+export type NumericSummary = {
+  min: number | null
+  max: number | null
+  mean: number | null
+  std: number | null
+}
+
+export type DatasetStatisticsResponse = {
+  rows: number
+  columns: number
+  missing_values: Record<string, number>
+  unique_values: Record<string, number>
+  numeric_summary: Record<string, NumericSummary>
+}
