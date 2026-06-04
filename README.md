@@ -37,6 +37,8 @@ Frontend (`http://localhost:5173`) talks only to the local backend (`http://loca
 
 <img src="docs/screenshots/statistics-modal.png" alt="Statistics modal" width="900" />
 
+<img src="docs/screenshots/dark-mode.png" alt="Dark mode" width="900" />
+
 ## Getting Started
 
 ### Prerequisites
