@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Iterable
+import re
 
 import duckdb
 
@@ -14,6 +15,16 @@ from backend.schemas.dataset import (
     DatasetSchemaResponse,
     DatasetStatsResponse,
     DatasetSummary,
+)
+
+_FORBIDDEN_SQL_KEYWORDS = re.compile(
+    r"\b(attach|alter|call|checkpoint|copy|create|delete|detach|drop|export|import|insert|install|load|pragma|set|update|vacuum)\b",
+    flags=re.IGNORECASE,
+)
+
+_FORBIDDEN_TABLE_FUNCTIONS = re.compile(
+    r"\b(csv_scan|json_scan|parquet_scan|read_[a-z0-9_]+)\b",
+    flags=re.IGNORECASE,
 )
 
 
@@ -90,6 +101,50 @@ class DatasetService:
             page_size=page_size,
             total_rows=total_rows,
             columns=all_columns,
+            rows=rows,
+        )
+
+    def query(
+        self,
+        *,
+        name: str,
+        sql: str,
+        page: int,
+        page_size: int,
+    ) -> DatasetPreviewResponse:
+        dataset = self._get_by_name(name)
+        normalized_sql = _normalize_user_sql(sql)
+        offset = (page - 1) * page_size
+
+        con = duckdb.connect(database=":memory:")
+        try:
+            from_clause = self._from_clause(dataset)
+            con.execute(f"CREATE OR REPLACE VIEW dataset AS SELECT * FROM {from_clause}")
+
+            try:
+                total_rows = int(
+                    con.execute(f"SELECT COUNT(*) AS count FROM ({normalized_sql}) AS q").fetchone()[0]
+                )
+            except duckdb.Error as exc:
+                raise ValueError(str(exc)) from exc
+
+            try:
+                cursor = con.execute(
+                    f"SELECT * FROM ({normalized_sql}) AS q LIMIT {page_size} OFFSET {offset}"
+                )
+            except duckdb.Error as exc:
+                raise ValueError(str(exc)) from exc
+
+            columns = [DatasetColumn(name=col[0], dtype=str(col[1])) for col in cursor.description]
+            rows = _fetch_dicts_from_cursor(cursor)
+        finally:
+            con.close()
+
+        return DatasetPreviewResponse(
+            page=page,
+            page_size=page_size,
+            total_rows=total_rows,
+            columns=columns,
             rows=rows,
         )
 
@@ -179,7 +234,30 @@ def _escape_string(value: str) -> str:
     return value.replace("'", "''")
 
 
+def _normalize_user_sql(sql: str) -> str:
+    normalized = sql.strip()
+    normalized = re.sub(r";+\s*$", "", normalized)
+    if normalized == "":
+        raise ValueError("SQL query is required")
+    if ";" in normalized:
+        raise ValueError("Only a single SQL statement is allowed")
+    if not re.match(r"^(with|select)\b", normalized, flags=re.IGNORECASE):
+        raise ValueError("Only SELECT queries are supported")
+    if not re.search(r"\bdataset\b", normalized, flags=re.IGNORECASE):
+        raise ValueError("Query must reference the `dataset` view")
+    if _FORBIDDEN_SQL_KEYWORDS.search(normalized):
+        raise ValueError("Query contains a forbidden SQL keyword")
+    if _FORBIDDEN_TABLE_FUNCTIONS.search(normalized):
+        raise ValueError("Query contains a forbidden table function (use the `dataset` view)")
+    return normalized
+
+
 def _fetch_dicts(con: duckdb.DuckDBPyConnection, sql: str) -> list[dict[str, Any]]:
     cursor = con.execute(sql)
+    colnames = [col[0] for col in cursor.description]
+    return [dict(zip(colnames, row, strict=True)) for row in cursor.fetchall()]
+
+
+def _fetch_dicts_from_cursor(cursor: duckdb.DuckDBPyConnection) -> list[dict[str, Any]]:
     colnames = [col[0] for col in cursor.description]
     return [dict(zip(colnames, row, strict=True)) for row in cursor.fetchall()]

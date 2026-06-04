@@ -8,6 +8,7 @@ from fastapi.responses import FileResponse
 
 from backend.schemas.dataset import (
     DatasetPreviewResponse,
+    DatasetQueryRequest,
     DatasetSchemaResponse,
     DatasetStatisticsResponse,
     DatasetStatsResponse,
@@ -74,6 +75,21 @@ def dataset_preview(
             search=search,
             sort_by=sort_by,
             sort_dir=sort_dir,
+        )
+    except FileNotFoundError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
+@router.post("/{name}/query", response_model=DatasetPreviewResponse)
+def dataset_query(name: str, req: DatasetQueryRequest) -> DatasetPreviewResponse:
+    try:
+        return DatasetService().query(
+            name=name,
+            sql=req.sql,
+            page=req.page,
+            page_size=req.page_size,
         )
     except FileNotFoundError as exc:
         raise HTTPException(status_code=404, detail=str(exc)) from exc

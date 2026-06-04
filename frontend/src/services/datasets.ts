@@ -6,7 +6,7 @@ import type {
   DatasetSummary,
 } from '@/types/datasets'
 
-import { apiGet } from './api'
+import { apiGet, apiPost } from './api'
 
 export function listDatasets(): Promise<DatasetSummary[]> {
   return apiGet<DatasetSummary[]>('/datasets')
@@ -43,4 +43,15 @@ export function previewDataset(
   return apiGet<DatasetPreviewResponse>(
     `/datasets/${encodeURIComponent(name)}/preview?${qp.toString()}`,
   )
+}
+
+export function queryDataset(
+  name: string,
+  params: {
+    sql: string
+    page: number
+    page_size: number
+  },
+): Promise<DatasetPreviewResponse> {
+  return apiPost<DatasetPreviewResponse>(`/datasets/${encodeURIComponent(name)}/query`, params)
 }

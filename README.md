@@ -16,6 +16,7 @@ A local-first dataset explorer inspired by the Hugging Face Dataset Viewer.
 - Fast backend preview with DuckDB
 - Table viewer with sticky header + horizontal scroll
 - Server-side pagination, sorting, and global search
+- SQL query editor (DuckDB, local)
 - Image thumbnails for `*.png/*.jpg/*.webp` path columns (e.g. `image_path`)
 - Row virtualization for smooth scrolling
 - Dataset statistics endpoint (missing/unique/numeric summaries)
@@ -97,6 +98,7 @@ Visit `http://localhost:5173`.
 - `GET /datasets/{name}/schema`
 - `GET /datasets/{name}/stats`
 - `GET /datasets/{name}/preview?page=1&page_size=100&search=...&sort_by=...&sort_dir=asc|desc`
+- `POST /datasets/{name}/query`
 - `GET /datasets/{name}/statistics`
 
 ## Roadmap
