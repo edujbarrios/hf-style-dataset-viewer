@@ -53,3 +53,9 @@ class DatasetPreviewResponse(BaseModel):
     total_rows: int = Field(ge=0)
     columns: list[DatasetColumn]
     rows: list[dict[str, Any]]
+
+
+class DatasetQueryRequest(BaseModel):
+    sql: str = Field(min_length=1)
+    page: int = Field(default=1, ge=1)
+    page_size: int = Field(default=100, ge=1, le=500)
