@@ -14,15 +14,17 @@ export function Sidebar() {
   const error = useDatasetStore((s) => s.error)
 
   return (
-    <aside className="flex h-full flex-col border-r border-slate-200 bg-white">
+    <aside className="flex h-full flex-col border-r border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
       <div className="p-4">
-        <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+        <div className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
           datasets
         </div>
         <div className="mt-3">
           <Input placeholder="Search datasets…" disabled={isLoading} />
         </div>
-        {isLoading ? <div className="mt-2 text-xs text-slate-500">Loading…</div> : null}
+        {isLoading ? (
+          <div className="mt-2 text-xs text-slate-500 dark:text-slate-400">Loading…</div>
+        ) : null}
         {error ? <div className="mt-2 text-xs text-red-700">{error}</div> : null}
       </div>
       <Separator />
@@ -37,16 +39,18 @@ export function Sidebar() {
                 onClick={() => selectByName(d.name)}
                 className={[
                   'flex w-full items-center justify-between rounded-md px-3 py-2 text-left text-sm',
-                  active ? 'bg-slate-100 text-slate-900' : 'hover:bg-slate-50 text-slate-700',
+                  active
+                    ? 'bg-slate-100 text-slate-900 dark:bg-slate-800 dark:text-slate-100'
+                    : 'text-slate-700 hover:bg-slate-50 dark:text-slate-200 dark:hover:bg-slate-800/60',
                 ].join(' ')}
               >
                 <span className="flex min-w-0 items-center gap-2">
-                  <FileText className="h-4 w-4 flex-none text-slate-500" />
+                  <FileText className="h-4 w-4 flex-none text-slate-500 dark:text-slate-400" />
                   <span className="truncate">{d.name}</span>
                 </span>
                 <span className="flex items-center gap-2">
                   <Badge className="hidden sm:inline-flex">{d.format}</Badge>
-                  <span className="hidden text-xs text-slate-400 md:inline">
+                  <span className="hidden text-xs text-slate-400 dark:text-slate-500 md:inline">
                     {d.rows.toLocaleString()}
                   </span>
                 </span>
@@ -54,7 +58,9 @@ export function Sidebar() {
             )
           })}
           {!isLoading && datasets.length === 0 ? (
-            <div className="px-3 py-6 text-sm text-slate-500">No datasets found in `./datasets`.</div>
+            <div className="px-3 py-6 text-sm text-slate-500 dark:text-slate-400">
+              No datasets found in `./datasets`.
+            </div>
           ) : null}
         </div>
       </div>

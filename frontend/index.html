@@ -4,7 +4,20 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>frontend</title>
+    <title>hf-style-dataset-viewer</title>
+    <script>
+      ;(() => {
+        const storageKey = 'hf-style-theme'
+        const stored = localStorage.getItem(storageKey)
+        const prefersDark =
+          typeof window !== 'undefined' &&
+          'matchMedia' in window &&
+          window.matchMedia('(prefers-color-scheme: dark)').matches
+
+        const theme = stored === 'dark' || stored === 'light' ? stored : prefersDark ? 'dark' : 'light'
+        document.documentElement.classList.toggle('dark', theme === 'dark')
+      })()
+    </script>
   </head>
   <body>
     <div id="root"></div>
