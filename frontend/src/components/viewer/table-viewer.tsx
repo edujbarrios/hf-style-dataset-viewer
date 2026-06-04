@@ -16,6 +16,7 @@ import { Badge } from '../ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card'
 import { Button } from '../ui/button'
 import { Input } from '../ui/input'
+import { SqlEditor } from './sql-editor'
 
 function defaultSql(): string {
   return 'SELECT * FROM dataset'
@@ -295,9 +296,9 @@ export function TableViewer({ datasetName }: { datasetName: string }) {
                 <div className="text-xs font-medium text-slate-700 dark:text-slate-300">
                   SQL (table: <span className="font-mono">dataset</span>)
                 </div>
-                <textarea
+                <SqlEditor
                   value={sqlText}
-                  onChange={(e) => setSqlText(e.target.value)}
+                  onChange={setSqlText}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
                       e.preventDefault()
@@ -306,7 +307,6 @@ export function TableViewer({ datasetName }: { datasetName: string }) {
                     }
                   }}
                   rows={3}
-                  className="w-full resize-y rounded-md border border-slate-200 bg-white px-3 py-2 font-mono text-xs text-slate-900 shadow-sm focus:outline-none focus:ring-2 focus:ring-slate-400 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:focus:ring-slate-600"
                   placeholder="SELECT * FROM dataset WHERE ..."
                 />
               </div>
