@@ -40,6 +40,21 @@ Frontend (`http://localhost:5173`) talks only to the local backend (`http://loca
 
 <img src="docs/screenshots/dark-mode.png" alt="Dark mode" width="900" />
 
+## SQL search (DuckDB, local)
+
+SQL search runs entirely on your machine using DuckDB. When you switch to **SQL** mode, the backend creates an in-memory DuckDB connection and exposes your dataset as a view named `dataset`. Your query must reference `dataset` and must be a single `SELECT`/`WITH` statement (no writes / DDL).
+
+<img src="docs/screenshots/sql-search-dark.png" alt="SQL query editor (dark mode)" width="900" />
+
+Example:
+
+```sql
+SELECT id, problem, solution
+FROM dataset
+WHERE source = 'synthetic_math' AND problem ILIKE '%Solve%'
+ORDER BY id
+```
+
 ## Getting Started
 
 ### Prerequisites
