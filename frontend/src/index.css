@@ -19,3 +19,13 @@
     @apply bg-slate-50 text-slate-900 dark:bg-[#0b0f19] dark:text-slate-100;
   }
 }
+
+@layer utilities {
+  .sql-editor-pre {
+    scrollbar-width: none;
+  }
+
+  .sql-editor-pre::-webkit-scrollbar {
+    display: none;
+  }
+}
