@@ -1,10 +1,11 @@
 /* eslint-disable react-hooks/set-state-in-effect */
 import { useEffect, useState } from 'react'
-import { Database, RefreshCcw, Settings2, Sigma } from 'lucide-react'
+import { Database, Moon, RefreshCcw, Sigma, Sun } from 'lucide-react'
 
 import { useDatasetStore } from '@/store/datasets'
 import { getDatasetStats, getDatasetStatistics } from '@/services/datasets'
 import type { DatasetStatisticsResponse } from '@/types/datasets'
+import { useTheme } from '@/hooks/use-theme'
 
 import { Badge } from '../ui/badge'
 import { Button } from '../ui/button'
@@ -19,6 +20,7 @@ export function AppShell() {
   const refresh = useDatasetStore((s) => s.refresh)
   const isLoading = useDatasetStore((s) => s.isLoading)
   const error = useDatasetStore((s) => s.error)
+  const { theme, toggleTheme } = useTheme()
 
   const [columns, setColumns] = useState<number | null>(null)
   const selectedName = selected?.name ?? null
@@ -84,22 +86,28 @@ export function AppShell() {
   }, [showStats, selectedName])
 
   return (
-    <div className="h-dvh w-full bg-slate-50">
-      <header className="flex h-14 items-center justify-between border-b border-slate-200 bg-white px-4">
+    <div className="h-dvh w-full bg-slate-50 dark:bg-[#0b0f19]">
+      <header className="flex h-14 items-center justify-between border-b border-slate-200 bg-white px-4 dark:border-slate-800 dark:bg-slate-950">
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2 text-sm font-semibold">
-            <Database className="h-4 w-4 text-slate-600" />
+            <Database className="h-4 w-4 text-slate-600 dark:text-slate-300" />
             hf-style-dataset-viewer
           </div>
           {selected ? (
             <>
-              <Separator className="h-6 w-px bg-slate-200" />
+              <Separator className="h-6 w-px bg-slate-200 dark:bg-slate-800" />
               <div className="flex items-center gap-2">
-                <div className="text-sm font-medium text-slate-900">{selected.name}</div>
+                <div className="text-sm font-medium text-slate-900 dark:text-slate-100">
+                  {selected.name}
+                </div>
                 <Badge>{selected.format}</Badge>
-                <div className="text-xs text-slate-500">{selected.rows.toLocaleString()} rows</div>
+                <div className="text-xs text-slate-500 dark:text-slate-400">
+                  {selected.rows.toLocaleString()} rows
+                </div>
                 {columns !== null ? (
-                  <div className="text-xs text-slate-500">{columns.toLocaleString()} cols</div>
+                  <div className="text-xs text-slate-500 dark:text-slate-400">
+                    {columns.toLocaleString()} cols
+                  </div>
                 ) : null}
               </div>
             </>
@@ -124,8 +132,13 @@ export function AppShell() {
           >
             <Sigma className="h-4 w-4" />
           </Button>
-          <Button size="icon" variant="ghost" aria-label="Settings">
-            <Settings2 className="h-4 w-4" />
+          <Button
+            size="icon"
+            variant="ghost"
+            aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+            onClick={toggleTheme}
+          >
+            {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
           </Button>
         </div>
       </header>
@@ -177,7 +190,7 @@ export function AppShell() {
               <CardHeader>
                 <CardTitle>No dataset selected</CardTitle>
               </CardHeader>
-              <CardContent className="text-sm text-slate-500">
+              <CardContent className="text-sm text-slate-500 dark:text-slate-400">
                 Pick a dataset from the sidebar to begin exploring.
               </CardContent>
             </Card>
@@ -186,22 +199,28 @@ export function AppShell() {
       </div>
 
       {showStats ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-4">
-          <div className="w-full max-w-3xl rounded-lg border border-slate-200 bg-white shadow">
-            <div className="flex items-center justify-between border-b border-slate-200 p-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-4 dark:bg-black/60">
+          <div className="w-full max-w-3xl rounded-lg border border-slate-200 bg-white shadow dark:border-slate-800 dark:bg-slate-900">
+            <div className="flex items-center justify-between border-b border-slate-200 p-4 dark:border-slate-800">
               <div>
-                <div className="text-sm font-semibold text-slate-900">Statistics</div>
-                <div className="text-xs text-slate-500">{selectedName ?? '—'}</div>
+                <div className="text-sm font-semibold text-slate-900 dark:text-slate-100">
+                  Statistics
+                </div>
+                <div className="text-xs text-slate-500 dark:text-slate-400">
+                  {selectedName ?? '—'}
+                </div>
               </div>
               <Button variant="secondary" size="sm" onClick={() => setShowStats(false)}>
                 Close
               </Button>
             </div>
-            <div className="max-h-[70vh] overflow-auto p-4 text-sm">
-              {isStatsLoading ? <div className="text-slate-500">Loading…</div> : null}
+            <div className="max-h-[70vh] overflow-auto p-4 text-sm text-slate-900 dark:text-slate-100">
+              {isStatsLoading ? (
+                <div className="text-slate-500 dark:text-slate-400">Loading…</div>
+              ) : null}
               {statsError ? <div className="text-red-700">{statsError}</div> : null}
               {stats ? (
-                <pre className="whitespace-pre-wrap break-words rounded-md bg-slate-50 p-3 text-xs text-slate-800">
+                <pre className="whitespace-pre-wrap break-words rounded-md bg-slate-50 p-3 text-xs text-slate-800 dark:bg-slate-950 dark:text-slate-100">
                   {JSON.stringify(stats, null, 2)}
                 </pre>
               ) : null}

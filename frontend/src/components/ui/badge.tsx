@@ -7,8 +7,10 @@ const badgeVariants = cva(
   {
     variants: {
       variant: {
-        default: 'border-slate-200 bg-white text-slate-700',
-        subtle: 'border-slate-200 bg-slate-50 text-slate-700',
+        default:
+          'border-slate-200 bg-white text-slate-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200',
+        subtle:
+          'border-slate-200 bg-slate-50 text-slate-700 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-200',
       },
     },
     defaultVariants: {
@@ -23,4 +25,3 @@ export type BadgeProps = React.HTMLAttributes<HTMLSpanElement> &
 export function Badge({ className, variant, ...props }: BadgeProps) {
   return <span className={cn(badgeVariants({ variant }), className)} {...props} />
 }
-

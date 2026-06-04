@@ -83,9 +83,9 @@ function PreviewCell({ datasetName, value }: { datasetName: string; value: unkno
           alt={value}
           loading="lazy"
           decoding="async"
-          className="h-10 w-10 shrink-0 rounded border border-slate-200 bg-white object-cover"
+          className="h-10 w-10 shrink-0 rounded border border-slate-200 bg-white object-cover dark:border-slate-700 dark:bg-slate-900"
         />
-        <div className="min-w-0 truncate text-xs text-slate-500">{value}</div>
+        <div className="min-w-0 truncate text-xs text-slate-500 dark:text-slate-400">{value}</div>
       </a>
     )
   }
@@ -181,7 +181,7 @@ export function TableViewer({ datasetName }: { datasetName: string }) {
       <CardHeader className="flex flex-row items-center justify-between">
         <div className="space-y-1">
           <CardTitle>Preview</CardTitle>
-          <div className="text-xs text-slate-500">
+          <div className="text-xs text-slate-500 dark:text-slate-400">
             {totalRows.toLocaleString()} rows • page {data?.page ?? page} / {totalPages}
           </div>
         </div>
@@ -225,9 +225,9 @@ export function TableViewer({ datasetName }: { datasetName: string }) {
             >
               Next
             </Button>
-            <div className="text-xs text-slate-500">page size</div>
+            <div className="text-xs text-slate-500 dark:text-slate-400">page size</div>
             <select
-              className="h-9 rounded-md border border-slate-200 bg-white px-2 text-sm"
+              className="h-9 rounded-md border border-slate-200 bg-white px-2 text-sm text-slate-900 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
               value={pageSize}
               onChange={(e) => setPageSize(Number(e.target.value))}
             >
@@ -242,9 +242,9 @@ export function TableViewer({ datasetName }: { datasetName: string }) {
 
         <div
           ref={parentRef}
-          className="h-[60vh] overflow-auto rounded-md border border-slate-200 bg-white"
+          className="h-[60vh] overflow-auto rounded-md border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-950"
         >
-          <div className="sticky top-0 z-20 border-b border-slate-200 bg-white">
+          <div className="sticky top-0 z-20 border-b border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-950">
             {table.getHeaderGroups().map((hg) => (
               <div
                 key={hg.id}
@@ -255,7 +255,7 @@ export function TableViewer({ datasetName }: { datasetName: string }) {
                   <button
                     key={header.id}
                     type="button"
-                    className="border-r border-slate-100 px-3 py-2 text-left hover:bg-slate-50"
+                    className="border-r border-slate-100 px-3 py-2 text-left hover:bg-slate-50 dark:border-slate-800 dark:hover:bg-slate-900"
                     onClick={() => {
                       if (header.isPlaceholder) return
                       const col = String(header.column.id)
@@ -268,7 +268,7 @@ export function TableViewer({ datasetName }: { datasetName: string }) {
                     {header.isPlaceholder
                       ? null
                       : flexRender(header.column.columnDef.header, header.getContext())}
-                    <div className="mt-1 text-[10px] text-slate-400">
+                    <div className="mt-1 text-[10px] text-slate-400 dark:text-slate-500">
                       {sorting?.sortBy === header.column.id ? (sorting.sortDir === 'asc' ? '↑' : '↓') : ' '}
                     </div>
                   </button>
@@ -283,7 +283,7 @@ export function TableViewer({ datasetName }: { datasetName: string }) {
               return (
                 <div
                   key={row.id}
-                  className="grid border-b border-slate-100 hover:bg-slate-50"
+                  className="grid border-b border-slate-100 hover:bg-slate-50 dark:border-slate-800 dark:hover:bg-slate-900"
                   style={{
                     gridTemplateColumns,
                     position: 'absolute',
@@ -296,7 +296,7 @@ export function TableViewer({ datasetName }: { datasetName: string }) {
                   {row.getVisibleCells().map((cell) => (
                     <div
                       key={cell.id}
-                      className="border-r border-slate-100 px-3 py-2 text-sm text-slate-800"
+                      className="border-r border-slate-100 px-3 py-2 text-sm text-slate-800 dark:border-slate-800 dark:text-slate-100"
                     >
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </div>
@@ -305,12 +305,12 @@ export function TableViewer({ datasetName }: { datasetName: string }) {
               )
             })}
             {rows.length === 0 && !isLoading ? (
-              <div className="px-3 py-10 text-center text-sm text-slate-500">
+              <div className="px-3 py-10 text-center text-sm text-slate-500 dark:text-slate-400">
                 No rows to display.
               </div>
             ) : null}
             {isLoading ? (
-              <div className="absolute inset-0 flex items-center justify-center bg-white/70 text-sm text-slate-500">
+              <div className="absolute inset-0 flex items-center justify-center bg-white/70 text-sm text-slate-500 dark:bg-slate-950/70 dark:text-slate-400">
                 Loading preview…
               </div>
             ) : null}
@@ -324,8 +324,8 @@ export function TableViewer({ datasetName }: { datasetName: string }) {
 function ColumnHeader({ name, dtype }: { name: string; dtype: string }) {
   return (
     <div className="space-y-1">
-      <div className="text-xs font-semibold text-slate-900">{name}</div>
-      <div className="text-[11px] text-slate-500">{dtype.toLowerCase()}</div>
+      <div className="text-xs font-semibold text-slate-900 dark:text-slate-100">{name}</div>
+      <div className="text-[11px] text-slate-500 dark:text-slate-400">{dtype.toLowerCase()}</div>
     </div>
   )
 }
