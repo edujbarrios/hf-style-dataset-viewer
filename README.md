@@ -34,6 +34,8 @@ Frontend (`http://localhost:5173`) talks only to the local backend (`http://loca
 
 ## Screenshots
 
+Screenshots below use the included `sample_image_text` dataset (image + text).
+
 <img src="docs/screenshots/header-sidebar.png" alt="Header and sidebar" width="900" />
 
 <img src="docs/screenshots/statistics-modal.png" alt="Statistics modal" width="900" />
